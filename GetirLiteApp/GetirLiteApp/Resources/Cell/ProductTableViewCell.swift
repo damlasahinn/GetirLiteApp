@@ -20,7 +20,6 @@ class ProductTableViewCell: UITableViewCell {
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        //TODO: borderColor
         return imageView
     }()
     
@@ -39,6 +38,7 @@ class ProductTableViewCell: UITableViewCell {
         stackView.axis = .horizontal
         stackView.distribution = .equalSpacing
         stackView.alignment = .center
+        stackView.spacing = 4
         return stackView
     }()
     

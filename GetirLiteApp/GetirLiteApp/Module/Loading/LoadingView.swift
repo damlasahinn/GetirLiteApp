@@ -22,6 +22,7 @@ class LoadingView {
         blurView.frame = UIWindow(frame: UIScreen.main.bounds).frame
         activityIndicator.center = blurView.center
         activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = UIColor(named: "text-primary")
         blurView.contentView.addSubview(activityIndicator)
     }
     

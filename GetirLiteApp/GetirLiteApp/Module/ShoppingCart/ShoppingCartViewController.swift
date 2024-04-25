@@ -21,7 +21,7 @@ protocol ShoppingCartViewControllerProtocol: AnyObject {
     func setCartProductsIDs(_ ids: [String])
 }
 
-final class ShoppingCartViewController: BaseViewController {
+final class ShoppingCartViewController: CustomAlertViewController {
     
     private lazy var customNavigationBar: UIView = {
         let navBar = UIView()
@@ -51,6 +51,7 @@ final class ShoppingCartViewController: BaseViewController {
         tableView.register(ProductTableViewCell.self, forCellReuseIdentifier: "ProductTableViewCell")
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.accessibilityIdentifier = "CartTableView"
         return tableView
     }()
     
@@ -76,6 +77,7 @@ final class ShoppingCartViewController: BaseViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(ProductCollectionViewCell.self, forCellWithReuseIdentifier: "ProductCollectionViewCell")
+        collectionView.accessibilityIdentifier = "SuggestedProductsCollectionView"
         return collectionView
     }()
     
@@ -89,6 +91,7 @@ final class ShoppingCartViewController: BaseViewController {
         let button = CompleteButton(type: .system)
         button.addTarget(self, action: #selector(completeOrderTapped), for: .touchUpInside)
         button.layer.cornerRadius = 10
+        button.accessibilityIdentifier = "completeOrderButton"
         return button
     }()
     
@@ -97,6 +100,10 @@ final class ShoppingCartViewController: BaseViewController {
     private var cartProducts: [Product] = [] {
         didSet {
             reloadTableViewData()
+            
+            if cartProducts.isEmpty {
+                closeViewControllerIfNeeded()
+            }
         }
     }
     
@@ -106,6 +113,7 @@ final class ShoppingCartViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.accessibilityIdentifier = "ShoppingCartViewController"
         setupViews()
         presenter.viewDidLoad()
         setupLeftBarButtonItem()
@@ -114,7 +122,7 @@ final class ShoppingCartViewController: BaseViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        presenter?.fetchFromCart()
         presenter?.viewDidAppear()
         presenter?.fetchCartProductsIDs()
     }
@@ -177,7 +185,7 @@ final class ShoppingCartViewController: BaseViewController {
         suggestedProductsCollectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            suggestedProductsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            suggestedProductsCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             suggestedProductsCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 16),
             suggestedProductsCollectionView.topAnchor.constraint(equalTo: sectionHeaderView.bottomAnchor, constant: 16),
             suggestedProductsCollectionView.widthAnchor.constraint(equalToConstant: 556),
@@ -233,7 +241,7 @@ final class ShoppingCartViewController: BaseViewController {
         closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         closeButton.tintColor = .white
         closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
-        
+        closeButton.accessibilityIdentifier = "cartCloseButton"
         let leftBarItem = UIBarButtonItem(customView: closeButton)
         
         self.navigationItem.leftBarButtonItem = leftBarItem
@@ -247,7 +255,7 @@ final class ShoppingCartViewController: BaseViewController {
         deleteButton.tintColor = .white
         deleteButton.backgroundColor = .clear
         deleteButton.addTarget(self, action: #selector(deleteButtonTapped), for: .touchUpInside)
-        
+        deleteButton.accessibilityIdentifier = "deleteButton"
         let rightBarItem = UIBarButtonItem(customView: deleteButton)
         
         self.navigationItem.rightBarButtonItem = rightBarItem
@@ -268,7 +276,18 @@ final class ShoppingCartViewController: BaseViewController {
     }
     
     @objc private func completeOrderTapped() {
-        print("complete clicked")
+        self.presenter?.deleteAllCartData()
+        if let totalString = self.completeButton.totalLabel.text, let total = Double(totalString.replacingOccurrences(of: "₺", with: "").replacingOccurrences(of: ",", with: ".")) {
+            let customAlertVC = CustomAlertViewController()
+            customAlertVC.shouldShowMap = true
+            customAlertVC.configureView(withTotal: total)
+            customAlertVC.modalPresentationStyle = .overFullScreen
+            customAlertVC.modalTransitionStyle = .crossDissolve
+            
+            self.present(customAlertVC, animated: true, completion: nil)
+        } else {
+            print("Error: Total value is not available or not convertible to Double.")
+        }
     }
     
     func createCompositionalLayout() -> UICollectionViewLayout {
@@ -285,6 +304,13 @@ extension ShoppingCartViewController: ShoppingCartViewControllerProtocol {
             if let cell = cartTableView.cellForRow(at: IndexPath(row: index, section: 0)) as? ProductTableViewCell {
                 cell.configureStepper(with: quantity)
                 presenter?.viewDidAppear()
+            }
+        }
+        
+        if let index = suggestedProducts.firstIndex(where: { $0.id == productId }) {
+            let indexPath = IndexPath(row: index, section: 0)
+            if let cell = suggestedProductsCollectionView.cellForItem(at: indexPath) as? ProductCollectionViewCell {
+                cell.stepperView.setCount(quantity)
             }
         }
     }
@@ -324,7 +350,6 @@ extension ShoppingCartViewController: ShoppingCartViewControllerProtocol {
     }
     
     func updateCartValue(total: Double) {
-        print(total)
         if total == 0.0 {
             presenter.deleteAllCartData()
         } else {
@@ -338,6 +363,12 @@ extension ShoppingCartViewController: ShoppingCartViewControllerProtocol {
         self.productsInCartIDs = ids
         self.reloadCollectionData()
     }
+    
+    private func closeViewControllerIfNeeded() {
+        if cartProducts.isEmpty {
+            presenter?.closeViewController()
+        }
+    }
 }
 
 extension ShoppingCartViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -348,12 +379,17 @@ extension ShoppingCartViewController: UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductCollectionViewCell", for: indexPath) as! ProductCollectionViewCell
-        
+        var itemQuantity: Int32 = 0
         let product = suggestedProducts[indexPath.row]
         
         let isInCart = productsInCartIDs.contains(product.id ?? "")
         
-        cell.configure(with: product, isInCart: isInCart)
+        if let quantity = cartProducts.first(where: { $0.id == product.id })?.quantity {
+            itemQuantity = quantity
+        }
+        
+        cell.configure(with: product, isInCart: isInCart,quantity: itemQuantity)
+        cell.stepperView.delegate = self
         return cell
     }
     
@@ -386,37 +422,46 @@ extension ShoppingCartViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "") { [weak self] (action, view, completionHandler) in
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (action, view, completionHandler) in
             guard let self = self else {
                 completionHandler(false)
                 return
             }
-            
+
             let productId = self.cartProducts[indexPath.row].id ?? ""
-            
+
             self.presenter.deleteProduct(productId: productId)
             
-            tableView.deleteRows(at: [indexPath], with: .automatic)
+            self.cartProducts.remove(at: indexPath.row)
             
-            presenter.fetchCartProductsIDs()
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            self.presenter.fetchCartProductsIDs()
+            self.presenter.viewDidAppear()
 
             completionHandler(true)
         }
         
-        deleteAction.backgroundColor = UIColor(named: "bg-body")
         deleteAction.image = UIImage(named: "trashIcon")
-        
+        deleteAction.backgroundColor = UIColor(named: "bg-body")
+
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         configuration.performsFirstActionWithFullSwipe = true
-        
+
         return configuration
     }
+
 }
 
 extension ShoppingCartViewController: StepperViewDelegate {
     func stepperViewDidTapIncrease(_ stepperView: StepperView) {
-        if let index = findProductIndex(for: stepperView), let productId = cartProducts[index].id {
-            presenter.increaseProductQuantity(productId: productId)
+        if let index = findProductIndex(for: stepperView), let productId = cartProducts[index].id, let currentQuantity = cartProducts[index].quantity {
+               let newQuantity = currentQuantity + 1
+               cartProducts[index].quantity = newQuantity
+               stepperView.setCount(newQuantity)
+               presenter.increaseProductQuantity(productId: productId)
+               reloadQuantity(newQuantity, productId)
+           
         }
     }
     
@@ -424,6 +469,10 @@ extension ShoppingCartViewController: StepperViewDelegate {
         if let index = findProductIndex(for: stepperView), let productId = cartProducts[index].id {
             if stepperView.getCount() > 0 {
                 presenter.decreaseProductQuantity(productId: productId)
+                presenter.viewDidAppear()
+                self.cartTableView.reloadData()
+                self.suggestedProductsCollectionView.reloadData()
+            
             } else {
                 presenter.deleteProduct(productId: productId)
                 presenter.fetchCartProductsIDs()
@@ -439,11 +488,20 @@ extension ShoppingCartViewController: StepperViewDelegate {
     }
     
     private func findProductIndex(for stepperView: StepperView) -> Int? {
-        for (index, cell) in cartTableView.visibleCells.enumerated() {
-            if let cell = cell as? ProductTableViewCell, cell.stepperView == stepperView {
+        
+        for (index, cell) in suggestedProductsCollectionView.visibleCells.enumerated() {
+            if let cell = cell as? ProductCollectionViewCell, cell.stepperView == stepperView {
                 return index
             }
         }
+        
+        let visibleRows = cartTableView.indexPathsForVisibleRows ?? []
+        for indexPath in visibleRows {
+            if let cell = cartTableView.cellForRow(at: indexPath) as? ProductTableViewCell, cell.stepperView == stepperView {
+                return indexPath.row
+            }
+        }
+        
         return nil
     }
 

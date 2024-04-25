@@ -15,6 +15,8 @@ protocol ProductDetailViewControllerProtocol: AnyObject {
     func showStepperView(with quantity: Int32)
     func reloadCoreData()
     func updateCartValue(total: Double)
+    func displayCartProducts(_ products: [Product])
+    func displayError(_ error: String)
 }
 
 final class ProductDetailViewController: BaseViewController {
@@ -51,6 +53,7 @@ final class ProductDetailViewController: BaseViewController {
         imageView.image = UIImage(named: "marketIcon")
         imageView.backgroundColor = .clear
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.accessibilityIdentifier = "productImageView"
         return imageView
     }()
     
@@ -61,6 +64,7 @@ final class ProductDetailViewController: BaseViewController {
         label.textColor = UIColor(named: "text-primary")
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "priceLabel"
         return label
     }()
     
@@ -70,7 +74,9 @@ final class ProductDetailViewController: BaseViewController {
         label.font = UIFont(name: "OpenSans-Semibold", size: 16)
         label.textColor = UIColor(named: "text-dark")
         label.textAlignment = .center
+        label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.accessibilityIdentifier = "productNameLabel"
         return label
     }()
     
@@ -97,13 +103,14 @@ final class ProductDetailViewController: BaseViewController {
         button.layer.shadowOffset = CGSize(width: 0, height: -4)
         button.layer.shadowRadius = 8
         button.layer.shadowOpacity = 1
-        
+        button.accessibilityIdentifier = "addToCartButton"
         return button
     }()
     
     private lazy var cartButton: UIButton = {
         let button = UIButton(type: .custom)
         button.addTarget(self, action: #selector(didTapCartButton), for: .touchUpInside)
+        button.accessibilityIdentifier = "cartButton"
         return button
     }()
     
@@ -116,15 +123,20 @@ final class ProductDetailViewController: BaseViewController {
         let view = StepperView()
         view.delegate = self
         view.isUserInteractionEnabled = true
+        view.stackViewOrientation = .horizontal
         return view
     }()
     
     private let spacing: CGFloat = 4
     var presenter: ProductDetailPresenterProtocol!
     var product: Product?
+    private var cartProducts: [Product] = []
+    
+    private var productsInCartIDs: [String] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.accessibilityIdentifier = "ProductDetailViewController"
         setupViews()
         presenter.viewDidLoad()
         setupLeftBarButtonItem()
@@ -134,6 +146,7 @@ final class ProductDetailViewController: BaseViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         presenter.viewDidAppear()
+        presenter.fetchCartProducts()
     }
     
     private func setupCartButton() {
@@ -171,6 +184,9 @@ final class ProductDetailViewController: BaseViewController {
             cartValueLabel.trailingAnchor.constraint(equalTo: labelBackgroundView.trailingAnchor, constant: -10),
             cartValueLabel.centerYAnchor.constraint(equalTo: labelBackgroundView.centerYAnchor)
         ])
+        
+        labelBackgroundView.isUserInteractionEnabled = false
+        cartIconImageView.isUserInteractionEnabled = false
 
         cartButton.layer.cornerRadius = 8
         cartButton.backgroundColor = .white
@@ -188,6 +204,7 @@ final class ProductDetailViewController: BaseViewController {
         closeButton.setImage(UIImage(systemName: "xmark"), for: .normal)
         closeButton.tintColor = .white
         closeButton.addTarget(self, action: #selector(closeButtonTapped), for: .touchUpInside)
+        closeButton.accessibilityIdentifier = "detailCloseButton"
         
         let leftBarItem = UIBarButtonItem(customView: closeButton)
         
@@ -319,7 +336,6 @@ final class ProductDetailViewController: BaseViewController {
         NSLayoutConstraint.activate([
             productNameLabel.topAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: spacing),
             productNameLabel.centerXAnchor.constraint(equalTo: pageView.centerXAnchor),
-            productNameLabel.widthAnchor.constraint(equalToConstant: 343),
             productNameLabel.heightAnchor.constraint(equalToConstant: 22)
         ])
         
@@ -368,6 +384,30 @@ final class ProductDetailViewController: BaseViewController {
 }
 
 extension ProductDetailViewController: ProductDetailViewControllerProtocol {
+    
+    
+    func displayError(_ error: String) {
+        print("Error displaying")
+    }
+    
+    func displayCartProducts(_ products: [Product]) {
+        self.cartProducts = products
+
+        if cartProducts.isEmpty {
+            showAddToCartButton()
+        } else {
+            if let currentProduct = product {
+                if let quantity = cartProducts.first(where: { $0.id == currentProduct.id })?.quantity {
+                    showStepperView(with: quantity)
+                } else {
+                    showStepperViewWithCart()
+                }
+            } else {
+                showAddToCartButton()
+            }
+        }
+    }
+    
     func reloadCoreData() {
         presenter.refreshProductDetails()
     }
@@ -382,10 +422,13 @@ extension ProductDetailViewController: ProductDetailViewControllerProtocol {
         productNameLabel.text = product.name
         priceLabel.text = product.priceText
         attributeLabel.text = product.attribute
-        if let imageURL = product.imageURL, let url = URL(string: imageURL) {
-            productImageView.kf.setImage(with: url, placeholder: UIImage(named: "placeholderImage"))
-        }
         
+        let placeholderImage = UIImage(named: "marketIcon")
+        if let urlString = product.bestAvailableURL, let url = URL(string: urlString) {
+            productImageView.kf.setImage(with: url, placeholder: placeholderImage)
+        } else {
+            productImageView.image = placeholderImage
+        }
         self.product = product
     }
     
@@ -405,13 +448,15 @@ extension ProductDetailViewController: ProductDetailViewControllerProtocol {
         stepperView.setCount(quantity)
         cartButton.isHidden = false
     }
-
+    
+    func showStepperViewWithCart() {
+        addToCartButton.isHidden = false
+        stepperView.isHidden = true
+        cartButton.isHidden = false
+    }
 }
 
 extension ProductDetailViewController: StepperViewDelegate {
-    func stepperView(_ stepperView: StepperView, didUpdateQuantity quantity: Int32, forProductId productId: String) {
-       //TODO: make this optional
-    }
     
     func stepperViewDidTapIncrease(_ stepperView: StepperView) {
         guard let product = product, let productId = product.id else {

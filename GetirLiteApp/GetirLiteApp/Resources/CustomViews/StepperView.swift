@@ -7,6 +7,11 @@
 
 import UIKit
 
+enum StackViewOrientation {
+    case horizontal
+    case vertical
+}
+
 protocol StepperViewProtocol: AnyObject {
     func setCount(_ count: Int32)
     func getCount() -> Int32
@@ -33,8 +38,10 @@ class StepperView: UIView {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "minus"), for: .normal)
         button.addTarget(self, action: #selector(decreaseButtonTapped), for: .touchUpInside)
+        button.backgroundColor = UIColor.white
         button.tintColor = UIColor(named: "text-primary")
         button.isUserInteractionEnabled = true
+        button.accessibilityIdentifier = "stepperDecrease"
         return button
     }()
     
@@ -42,8 +49,10 @@ class StepperView: UIView {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "plus"), for: .normal)
         button.addTarget(self, action: #selector(increaseButtonTapped), for: .touchUpInside)
+        button.backgroundColor = UIColor.white
         button.tintColor = UIColor(named: "text-primary")
         button.isUserInteractionEnabled = true
+        button.accessibilityIdentifier = "stepperIncrease"
         return button
     }()
     
@@ -60,11 +69,17 @@ class StepperView: UIView {
     private lazy var stackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [decreaseButton, countLabel, increaseButton])
         stack.axis = .horizontal
-        stack.distribution = .fill
+        stack.distribution = .fillEqually
         stack.alignment = .center
         stack.spacing = 0
         return stack
     }()
+    
+    var stackViewOrientation: StackViewOrientation = .horizontal {
+        didSet {
+            updateStackViewOrientation()
+        }
+    }
     
     override init(frame: CGRect = .zero) {
         super.init(frame: frame)
@@ -74,6 +89,10 @@ class StepperView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func updateStackViewOrientation() {
+        stackView.axis = (stackViewOrientation == .horizontal) ? .horizontal : .vertical
     }
     
     private func setupView() {
@@ -109,6 +128,16 @@ class StepperView: UIView {
             increaseButton.heightAnchor.constraint(equalToConstant: 48),
             increaseButton.widthAnchor.constraint(equalToConstant: 48)
         ])
+        
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor(named: "bg-body")?.cgColor
+        self.layer.cornerRadius = 8
+        
+        self.layer.shadowColor = UIColor.black.withAlphaComponent(0.1).cgColor
+        self.layer.shadowOffset = CGSize(width: 0, height: 1)
+        self.layer.shadowRadius = 3
+        self.layer.shadowOpacity = 1
+        self.layer.masksToBounds = false
     }
     
     @objc private func decreaseButtonTapped() {

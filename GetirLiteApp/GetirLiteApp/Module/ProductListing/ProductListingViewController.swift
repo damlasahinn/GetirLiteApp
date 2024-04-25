@@ -15,7 +15,9 @@ protocol ProductListingViewControllerProtocol: AnyObject {
     func displayError(_ error: String)
     func reloadData()
     func updateCartValue(total: Double)
-    func setCartProductsIDs(_ ids: [String])
+    func updateCartProductsIDs(_ ids: [String])
+    func displayCartProducts(_ products: [Product])
+    func reloadQuantity(_ quantity: Int32,_ productId: String)
 }
 
 enum CollectionViewType {
@@ -44,6 +46,7 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
     private lazy var cartButton: UIButton = {
         let button = UIButton(type: .custom)
         button.addTarget(self, action: #selector(didTapCartButton), for: .touchUpInside)
+        button.accessibilityIdentifier = "listingCartButton"
         return button
     }()
     
@@ -59,8 +62,8 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.delegate = self
         collectionView.dataSource = self
-        
         collectionView.register(ProductCollectionViewCell.self, forCellWithReuseIdentifier: "ProductCollectionViewCell")
+        collectionView.accessibilityIdentifier = "horizontalCollectionView"
         return collectionView
     }()
     
@@ -71,8 +74,8 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
         collectionView.showsVerticalScrollIndicator = true
         collectionView.delegate = self
         collectionView.dataSource = self
-        
         collectionView.register(ProductCollectionViewCell.self, forCellWithReuseIdentifier: "ProductCollectionViewCell")
+        collectionView.accessibilityIdentifier = "verticalCollectionView"
         return collectionView
     }()
     
@@ -82,9 +85,15 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
     private var verticalProducts: [ProductResponse] = []
     
     private var productsInCartIDs: [String] = []
+    private var cartProducts: [Product] = [] {
+        didSet {
+            reloadData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.accessibilityIdentifier = "mainScreen"
         setupViews()
         setupCollectionView()
         setupCartButton()
@@ -93,8 +102,13 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         presenter?.viewDidAppear()
+        presenter?.fetchFromCart()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        reloadData()
     }
     
     private func setupViews() {
@@ -109,7 +123,7 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
         labelBackgroundView.layer.cornerRadius = 8
         labelBackgroundView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
         cartButton.addSubview(labelBackgroundView)
-        
+
         let cartIconImageView = UIImageView(image: UIImage(named: "cartIcon"))
         cartButton.addSubview(cartIconImageView)
         cartIconImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -137,6 +151,9 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
             cartValueLabel.trailingAnchor.constraint(equalTo: labelBackgroundView.trailingAnchor, constant: -10),
             cartValueLabel.centerYAnchor.constraint(equalTo: labelBackgroundView.centerYAnchor)
         ])
+        
+        labelBackgroundView.isUserInteractionEnabled = false
+        cartIconImageView.isUserInteractionEnabled = false
 
         cartButton.layer.cornerRadius = 8
         cartButton.backgroundColor = .white
@@ -204,7 +221,7 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
         view.addSubview(horizontalCollectionView)
         NSLayoutConstraint.activate([
             horizontalCollectionView.topAnchor.constraint(equalTo: customNavigationBar.bottomAnchor, constant: 16),
-            horizontalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            horizontalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             horizontalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             horizontalCollectionView.heightAnchor.constraint(equalToConstant: 185)
         ])
@@ -212,7 +229,7 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
         view.addSubview(verticalCollectionView)
         NSLayoutConstraint.activate([
             verticalCollectionView.topAnchor.constraint(equalTo: horizontalCollectionView.bottomAnchor, constant: 16),
-            verticalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            verticalCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 8),
             verticalCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             verticalCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
@@ -245,6 +262,19 @@ final class ProductListingViewController: BaseViewController, LoadingShowable {
 }
 
 extension ProductListingViewController: ProductListingViewControllerProtocol {
+    func reloadQuantity(_ quantity: Int32,_ productId: String) {
+        if let index = self.cartProducts.firstIndex(where: { $0.id == productId }) {
+            self.cartProducts[index].quantity = quantity
+            DispatchQueue.main.async {
+                self.reloadData()
+            }
+        }
+    }
+    
+    func displayCartProducts(_ products: [Product]) {
+        self.cartProducts = products
+        reloadData()
+    }
     
     func showLoadingView() {
         DispatchQueue.main.async {
@@ -268,7 +298,7 @@ extension ProductListingViewController: ProductListingViewControllerProtocol {
     }
     
     func displayError(_ error: String) {
-        print("Error displaying")
+        print("Error displaying \(error)")
     }
     
     func reloadData() {
@@ -285,7 +315,7 @@ extension ProductListingViewController: ProductListingViewControllerProtocol {
         }
     }
     
-    func setCartProductsIDs(_ ids: [String]) {
+    func updateCartProductsIDs(_ ids: [String]) {
         self.productsInCartIDs = ids
         self.reloadData()
     }
@@ -305,17 +335,25 @@ extension ProductListingViewController: UICollectionViewDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductCollectionViewCell", for: indexPath) as! ProductCollectionViewCell
         let product: Product
-        
+        var itemQuantity: Int32 = 0
         if collectionView == horizontalCollectionView {
             let allProducts = horizontalProducts.flatMap { $0.products ?? [] }
             product = allProducts[indexPath.row]
+            if let quantity = cartProducts.first(where: { $0.id == product.id })?.quantity {
+                itemQuantity = quantity
+            }
         } else {
             let allProducts = verticalProducts.flatMap { $0.products ?? [] }
             product = allProducts[indexPath.row]
+            if let quantity = cartProducts.first(where: { $0.id == product.id })?.quantity {
+                itemQuantity = quantity
+            }
         }
 
         let isInCart = productsInCartIDs.contains(product.id ?? "")
-        cell.configure(with: product, isInCart: isInCart)
+        cell.configure(with: product, isInCart: isInCart, quantity: itemQuantity)
+        cell.stepperView.delegate = self
+        
         
         return cell
     }
@@ -333,3 +371,70 @@ extension ProductListingViewController: UICollectionViewDelegate, UICollectionVi
     }
 
 }
+
+extension ProductListingViewController: StepperViewDelegate {
+    func stepperViewDidTapIncrease(_ stepperView: StepperView) {
+
+        if let index = findProductIndex(for: stepperView, in: horizontalCollectionView),
+           let productId = cartProducts[index].id {
+            presenter?.increaseProductQuantity(productId: productId)
+        } else if let index = findProductIndex(for: stepperView, in: verticalCollectionView),
+                  let productId = cartProducts[index].id {
+            
+            presenter?.increaseProductQuantity(productId: productId)
+        }
+        presenter?.viewDidAppear()
+        reloadData()
+    }
+
+
+    func stepperViewDidTapDecrease(_ stepperView: StepperView) {
+        
+        if let index = findProductIndex(for: stepperView, in: horizontalCollectionView),
+           let productId = cartProducts[index].id {
+            if stepperView.getCount() > 0 {
+                presenter?.decreaseProductQuantity(productId: productId)
+                presenter?.viewDidAppear()
+            } else {
+                presenter?.deleteProduct(productId: productId)
+                
+            }
+        } else if let index = findProductIndex(for: stepperView, in: verticalCollectionView),
+           let productId = cartProducts[index].id {
+            if stepperView.getCount() > 0 {
+                presenter?.decreaseProductQuantity(productId: productId)
+            } else {
+                presenter?.deleteProduct(productId: productId)
+            }
+        }
+        presenter?.viewDidAppear()
+    }
+
+    func stepperViewDidTapDelete(_ stepperView: StepperView) {
+        if let index = findProductIndex(for: stepperView, in: horizontalCollectionView),
+           let productId = cartProducts[index].id {
+            presenter?.deleteProduct(productId: productId)
+        } else if let index = findProductIndex(for: stepperView, in: verticalCollectionView),
+           let productId = cartProducts[index].id {
+            presenter?.deleteProduct(productId: productId)
+            presenter?.fetchCartProductsIDs()
+        }
+    }
+
+
+    private func findProductIndex(for stepperView: StepperView, in collectionView: UICollectionView) -> Int? {
+        for index in 0..<collectionView.numberOfItems(inSection: 0) {
+            let indexPath = IndexPath(item: index, section: 0)
+            guard let cell = collectionView.cellForItem(at: indexPath) as? ProductCollectionViewCell,
+                  cell.stepperView === stepperView else {
+                continue
+            }
+            if let productId = cell.product?.id, let cartIndex = cartProducts.firstIndex(where: { $0.id == productId }) {
+                return cartIndex
+            }
+        }
+        return nil
+    }
+
+}
+

@@ -20,6 +20,7 @@ protocol ShoppingCartPresenterProtocol: AnyObject {
     func deleteAllCartData()
     func didSelectProduct(_ product: Product)
     func fetchCartProductsIDs()
+    func fetchFromCart()
 }
 
 final class ShoppingCartPresenter {
@@ -83,6 +84,9 @@ extension ShoppingCartPresenter: ShoppingCartPresenterProtocol {
     
     func viewDidLoad() {
         fetchFromAPI()
+    }
+    
+    func fetchFromCart() {
         fetchFromCoreData()
     }
     
@@ -122,9 +126,12 @@ extension ShoppingCartPresenter: ShoppingCartInteractorOutputProtocol {
     }
     
     func productUpdatedSuccessfully() {
-        view.reloadTableViewData()
+        DispatchQueue.main.async {
+            self.view.reloadTableViewData()
+        }
+       
     }
-
+    
     func failedToUpdateProduct(with reason: String) {
         // Show an error message to the user
     }

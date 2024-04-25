@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 public struct Product: Decodable {
     public let id: String?
@@ -45,5 +46,3 @@ public struct ProductResponse: Decodable {
         case id, name, productCount, products
     }
 }
-
-

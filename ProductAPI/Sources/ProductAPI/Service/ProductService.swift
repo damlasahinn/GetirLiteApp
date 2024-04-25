@@ -29,14 +29,12 @@ public class ProductService: ProductResponseProtocol {
     private func fetchData(from url: URL, completion: @escaping (Result<[ProductResponse], Error>) -> Void) {
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
-                print("Error in fetch \(error.localizedDescription)")
                 completion(.failure(error))
             } else if let data = data {
                 do {
                     let productResponses = try JSONDecoder().decode([ProductResponse].self, from: data)
                     completion(.success(productResponses))
                 } catch {
-                    print("Error in fetch \(error)")
                     completion(.failure(error))
                 }
             }

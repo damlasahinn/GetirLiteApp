@@ -7,6 +7,7 @@
 
 import Foundation
 import ProductAPI
+import RxSwift
 
 protocol ProductDetailPresenterProtocol: AnyObject {
     func viewDidLoad()
@@ -18,7 +19,7 @@ protocol ProductDetailPresenterProtocol: AnyObject {
     func decreaseProductQuantity(productId: String)
     func deleteProduct(productId: String)
     func refreshProductDetails()
-
+    func fetchCartProducts()
 }
 
 final class ProductDetailPresenter {
@@ -26,6 +27,8 @@ final class ProductDetailPresenter {
     let router: ProductDetailRouterProtocol!
     let interactor: ProductDetailInteractorProtocol!
     var product: Product
+    
+    private let disposeBag = DisposeBag()
     
     init(view: ProductDetailViewControllerProtocol!, 
          router: ProductDetailRouterProtocol!,
@@ -57,6 +60,22 @@ final class ProductDetailPresenter {
 }
 
 extension ProductDetailPresenter: ProductDetailPresenterProtocol {
+    func fetchCartProducts() {
+        interactor.fetchProductsFromCoreData()
+            .observe(on: MainScheduler.instance)
+            .subscribe(
+                onNext: { [weak self] (products: [Product]) in
+                    self?.view.displayCartProducts(products)
+                },
+                onError: { [weak self] error in
+                    self?.view.displayError("Failed to fetch cart products: \(error.localizedDescription)")
+                },
+                onCompleted: {
+                    print("Completed fetching cart products")
+                })
+            .disposed(by: disposeBag)
+    }
+
     func increaseProductQuantity(productId: String) {
         interactor.updateProductQuantity(productId: productId, increment: 1)
     }
@@ -99,6 +118,7 @@ extension ProductDetailPresenter: ProductDetailPresenterProtocol {
         guard let productId = product.id else { return }
         interactor.fetchUpdatedProduct(with: productId)
     }
+    
 }
 
 extension ProductDetailPresenter: ProductDetailInteractorOutputProtocol {

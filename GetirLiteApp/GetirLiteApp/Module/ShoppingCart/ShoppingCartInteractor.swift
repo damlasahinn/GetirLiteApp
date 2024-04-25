@@ -36,48 +36,21 @@ final class ShoppingCartInteractor {
 extension ShoppingCartInteractor: ShoppingCartInteractorProtocol {
     
     func deleteProductFromCoreData(productId: String, completion: @escaping () -> Void) {
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", productId)
-        
-        do {
-            if let product = try context.fetch(fetchRequest).first {
-                context.delete(product)
-                try context.save()
-                output?.fetchOutputQuantity(product.quantity, productId)
+        CoreDataManager.shared.deleteProduct(productId: productId) { success in
+            if success {
                 completion()
+            } else {
+                self.output?.failedToUpdateProduct(with: "Failed to delete the product from cart.")
             }
-        } catch {
-            print("Failed to delete products: \(error)")
         }
     }
     
     func fetchProductsFromCoreData() -> Observable<[Product]> {
-        Observable.create { observer in
-            let context = CoreDataManager.shared.persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
-
-            do {
-                let results = try context.fetch(fetchRequest)
-                let products = results.map { entity -> Product in
-                    let id = entity.id
-                    let name = entity.name
-                    let attribute = entity.attribute
-                    let priceText = entity.priceText
-                    let imageURL = entity.imageURL
-                    let thumbnailURL = entity.thumbnailURL
-                    let squareThumbnailURL = entity.squareThumbnailURL
-                    let price = entity.price
-                    let quantity = entity.quantity
-                    
-                    return Product(id: id, name: name, attribute: attribute, thumbnailURL: thumbnailURL, squareThumbnailURL: squareThumbnailURL, imageURL: imageURL, price: price, priceText: priceText, quantity: quantity)
-                }
+        return Observable.create { observer in
+            CoreDataManager.shared.fetchAllProducts { products in
                 observer.onNext(products)
                 observer.onCompleted()
-            } catch {
-                observer.onError(error)
             }
-
             return Disposables.create()
         }
     }
@@ -98,77 +71,40 @@ extension ShoppingCartInteractor: ShoppingCartInteractorProtocol {
         }
     }
 
-    
     func updateProductQuantity(productId: String, increment: Int32) {
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", productId)
-        
-        do {
-            let results = try context.fetch(fetchRequest)
-            if let product = results.first {
-                product.quantity += increment
-                if product.quantity < 0 { product.quantity = 0 }
-                try context.save()
-                output?.fetchOutputQuantity(product.quantity, productId)
+        CoreDataManager.shared.updateProductQuantity(productId: productId, increment: increment) { [weak self] success in
+            guard let strongSelf = self else { return }
+            if success {
+                CoreDataManager.shared.fetchProduct(productId: productId) { product in
+                    DispatchQueue.main.async {
+                        if let updatedQuantity = product?.quantity {
+                            strongSelf.output?.fetchOutputQuantity(updatedQuantity, productId)
+                        }
+                    }
+                }
             } else {
-                print("No product found with ID \(productId)")
+                strongSelf.output?.failedToUpdateProduct(with: "Unable to update product quantity.")
             }
-        } catch {
-            print("Failed to update quantity: \(error)")
         }
     }
-    
+
     func deleteAllProducts() {
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = ProductEntity.fetchRequest()
-        let batchDeleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
-        do {
-            try context.execute(batchDeleteRequest)
-            try context.save()
-            output?.fetchDeletedCart()
-        } catch {
-            output?.failedToUpdateProduct(with: "Failed to delete all products: \(error.localizedDescription)")
+        CoreDataManager.shared.deleteAllProducts { success in
+            if success {
+                self.output?.fetchDeletedCart()
+            } else {
+                self.output?.failedToUpdateProduct(with: "Failed to delete all products from cart.")
+            }
         }
     }
     
     func calculateTotalCartValue(completion: @escaping (Double) -> Void) {
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
-        
-        do {
-            let results = try context.fetch(fetchRequest)
-            let totalPrice = results.reduce(0.0) { (currentSum, product) -> Double in
-                let quantity = Double(product.quantity ?? 0)
-                let price = Double(product.priceText?.replacingOccurrences(of: "₺", with: "").replacingOccurrences(of: ",", with: ".") ?? "0") ?? 0.0
-                return currentSum + (quantity * price)
-            }
-            DispatchQueue.main.async {
-                completion(totalPrice)
-            }
-        } catch {
-            print("Failed to fetch products for total calculation: \(error)")
-            DispatchQueue.main.async {
-                completion(0.0)
-            }
+        CoreDataManager.shared.calculateTotalCartValue { totalPrice in
+            completion(totalPrice)
         }
     }
+    
     func fetchCartProductIDs(completion: @escaping ([String]) -> Void) {
-        let context = CoreDataManager.shared.persistentContainer.viewContext
-        let fetchRequest: NSFetchRequest<ProductEntity> = ProductEntity.fetchRequest()
-
-        do {
-            let results = try context.fetch(fetchRequest)
-            let ids = results.compactMap { $0.id }
-            DispatchQueue.main.async {
-                completion(ids)
-            }
-        } catch {
-            print("Failed to fetch product IDs: \(error)")
-            DispatchQueue.main.async {
-                completion([])
-            }
-        }
+        CoreDataManager.shared.fetchCartProductIDs(completion: completion)
     }
 }

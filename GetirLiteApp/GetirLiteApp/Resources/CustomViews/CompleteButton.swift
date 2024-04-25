@@ -12,6 +12,7 @@ class CompleteButton: UIButton {
     private lazy var completeView: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor(named: "text-primary")
+        view.isUserInteractionEnabled = false
         return view
     }()
     
@@ -20,6 +21,7 @@ class CompleteButton: UIButton {
         label.text = "Siparişi Tamamla"
         label.font = UIFont(name: "OpenSans-Bold", size: 14)
         label.textColor = .white
+        label.isUserInteractionEnabled = false
         return label
     }()
     

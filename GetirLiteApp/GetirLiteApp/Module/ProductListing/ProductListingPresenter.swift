@@ -15,7 +15,11 @@ protocol ProductListingPresenterProtocol: AnyObject {
     func viewDidAppear()
     func didSelectProduct(_ product: Product)
     func navigateToCart(_ route: ProductListingRoutes)
+    func increaseProductQuantity(productId: String)
+    func decreaseProductQuantity(productId: String)
+    func deleteProduct(productId: String)
     func fetchCartProductsIDs()
+    func fetchFromCart()
 }
 
 final class ProductListingPresenter {
@@ -33,26 +37,47 @@ final class ProductListingPresenter {
         self.router = router
         self.interactor = interactor
     }
-}
-
-extension ProductListingPresenter: ProductListingPresenterProtocol {
-    func viewDidLoad() {
-        view?.showLoadingView()
-        let verticalProductsObservable = interactor.fetchProducts(for: .vertical)
-        let horizontalProductsObservable = interactor.fetchProducts(for: .horizontal)
-
-        Observable.zip(verticalProductsObservable, horizontalProductsObservable)
+    
+    private func fetchFromCoreData() {
+        interactor.fetchProductsFromCoreData()
+            .observe(on: MainScheduler.instance)
             .subscribe(
-                onNext: { [weak self] verticalProducts, horizontalProducts in
-                    self?.view.displayProducts(verticalProducts, for: .vertical)
-                    self?.view.displayProducts(horizontalProducts, for: .horizontal)
+                onNext: { [weak self] products in
+                    self?.view.displayCartProducts(products)
                     self?.view.reloadData()
-                    self?.view.hideLoadingView()
                 },
                 onError: { [weak self] error in
                     self?.view.displayError(error.localizedDescription)
                 }
             ).disposed(by: disposeBag)
+    }
+}
+
+extension ProductListingPresenter: ProductListingPresenterProtocol {
+    
+    func increaseProductQuantity(productId: String) {
+        interactor.updateProductQuantity(productId: productId, increment: 1)
+    }
+    
+    func decreaseProductQuantity(productId: String) {
+        interactor.updateProductQuantity(productId: productId, increment: -1)
+    }
+    
+    func deleteProduct(productId: String) {
+        interactor.deleteProductFromCoreData(productId: productId) { [weak self] in
+            self?.fetchFromCoreData()
+        }
+    }
+    
+    func viewDidLoad() {
+        view?.showLoadingView()
+        interactor.fetchProducts(for: .vertical)
+        interactor.fetchProducts(for: .horizontal)
+        
+    }
+    
+    func fetchFromCart(){
+        fetchFromCoreData()
     }
     
     func viewDidAppear() {
@@ -72,13 +97,18 @@ extension ProductListingPresenter: ProductListingPresenterProtocol {
     
     func fetchCartProductsIDs() {
         interactor.fetchCartProductIDs { [weak self] ids in
-            self?.view.setCartProductsIDs(ids)
+            self?.view.updateCartProductsIDs(ids)
         }
     }
+    
 }
 
 extension ProductListingPresenter: ProductListingInteractorOutputProtocol {
-    func fetchOutput(_ products: [ProductResponse], for type: CollectionViewType) {
+    func failedToUpdateProduct(with reason: String) {
+        // Show an error message to the user
+    }
+    
+    func fetchOutput(_ products: [ProductResponse], for type: CollectionViewType) { //
         view?.hideLoadingView()
         view?.displayProducts(products, for: type)
         view?.reloadData()
@@ -86,6 +116,28 @@ extension ProductListingPresenter: ProductListingInteractorOutputProtocol {
     
     func failedToFetchProducts(with reason: String) {
         view?.displayError(reason)
+    }
+    
+    func productsFetched(_ products: [ProductResponse], for type: CollectionViewType) {
+        view.displayProducts(products, for: type)
+        view.hideLoadingView()
+    }
+    
+    func cartProductIDsFetched(_ ids: [String]) {
+        view.updateCartProductsIDs(ids)
+    }
+    
+    func totalCartValueCalculated(_ total: Double) {
+        view.updateCartValue(total: total)
+    }
+    
+    func encounteredError(_ error: any Error) {
+        view.displayError(error.localizedDescription)
+    }
+    
+    func fetchOutputQuantity(_ quantity: Int32,_ productId: String) {
+        view.reloadQuantity(quantity, productId)
+        view.reloadData()
     }
 }
 

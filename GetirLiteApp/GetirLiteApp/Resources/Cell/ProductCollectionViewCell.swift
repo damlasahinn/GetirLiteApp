@@ -9,6 +9,12 @@ import UIKit
 import Kingfisher
 import ProductAPI
 
+protocol ProductCollectionViewCellDelegate: AnyObject {
+    func stepperDidIncrease(in cell: ProductCollectionViewCell)
+    func stepperDidDecrease(in cell: ProductCollectionViewCell)
+    func stepperDidDelete(in cell: ProductCollectionViewCell)
+}
+
 final class ProductCollectionViewCell: UICollectionViewCell {
     
     private lazy var productImageView: UIImageView = {
@@ -49,6 +55,15 @@ final class ProductCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
+    lazy var stepperView: StepperView = {
+       let stepper = StepperView()
+       stepper.translatesAutoresizingMaskIntoConstraints = false
+       return stepper
+   }()
+    
+    let stepper = StepperView()
+    var product: Product?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -63,6 +78,8 @@ final class ProductCollectionViewCell: UICollectionViewCell {
         addSubview(priceLabel)
         addSubview(productNameLabel)
         addSubview(attributeLabel)
+        
+        clipsToBounds = false
         
         productImageView.translatesAutoresizingMaskIntoConstraints = false
         priceLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -92,7 +109,8 @@ final class ProductCollectionViewCell: UICollectionViewCell {
 }
 
 extension ProductCollectionViewCell {
-    func configure(with product: Product, isInCart: Bool) {
+    func configure(with product: Product, isInCart: Bool, quantity: Int32) {
+        self.product = product
         productNameLabel.text = product.name
         priceLabel.text = product.priceText
         attributeLabel.text = product.attribute
@@ -103,15 +121,36 @@ extension ProductCollectionViewCell {
         } else {
             productImageView.image = placeholderImage
         }
-
+        stepperView.removeFromSuperview()
+        
         if isInCart {
-            self.layer.borderWidth = 1
-            self.layer.borderColor = UIColor(named: "text-primary")?.cgColor
-            self.layer.cornerRadius = 10
+            productImageView.layer.borderWidth = 1
+            productImageView.layer.borderColor = UIColor(named: "text-primary")?.cgColor
+            productImageView.layer.cornerRadius = 10
+            
+            stepper.stackViewOrientation = .vertical
+            stepperView = stepper
+            contentView.addSubview(stepper)
+            
+            stepper.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                stepper.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+                stepper.topAnchor.constraint(equalTo: topAnchor),
+                stepper.widthAnchor.constraint(equalToConstant: 35),
+                stepper.heightAnchor.constraint(equalToConstant: 105),
+            ])
         } else {
-            self.layer.borderWidth = 0
-            self.layer.borderColor = nil
-            self.layer.cornerRadius = 0
+            productImageView.layer.borderWidth = 0
+            productImageView.layer.borderColor = nil
+            productImageView.layer.cornerRadius = 0
         }
+        
+        
+        stepperView.setCount(quantity)
+        
+    }
+    
+    func configureStepper(with quantity: Int32) {
+        stepperView.setCount(quantity)
     }
 }

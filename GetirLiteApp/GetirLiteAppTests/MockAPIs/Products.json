@@ -1,0 +1,355 @@
+[
+  {
+    "id": "658a96a10b4040a52787a106",
+    "name": "Beverage Packs",
+    "productCount": 38,
+    "products": [
+      {
+        "id": "66055119e6d3728ea0a686a0",
+        "name": "Kızılay Erzincan & Misket Limonu ve Nane Aromalı İçecek İkilisi",
+        "attribute": "2 Products",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/62a59d8a-4dc4-4b4d-8435-643b1167f636.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/62a59d8a-4dc4-4b4d-8435-643b1167f636.jpg",
+        "price": 65.3,
+        "priceText": "₺65,30"
+      },
+      {
+        "id": "5d6d2c696deb8b00011f7665",
+        "name": "Kuzeyden",
+        "attribute": "2 x 5 L",
+        "thumbnailURL": "http://cdn.getir.com/product/5d6d2c696deb8b00011f7665_tr_1617795578982.jpeg",
+        "imageURL": "http://cdn.getir.com/product/5d6d2c696deb8b00011f7665_tr_1617795578982.jpeg",
+        "price": 59.2,
+        "priceText": "₺59,20"
+      },
+      {
+        "id": "645a08cc4d357e68122d74b1",
+        "name": "Sırma Lemon & Sırma Black Mulberry & Blackcurrant Mineral Water",
+        "attribute": "2 Products",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/ff43e9c8-a6a0-4444-923b-4972b2915284.png",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/ff43e9c8-a6a0-4444-923b-4972b2915284.png",
+        "price": 43.9,
+        "priceText": "₺43,90"
+      },
+      {
+        "id": "65255c0d709731e5ab57afdb",
+        "name": "Pepsi & Yedigün & 7up Package",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/ee4197b1-ad0d-4089-a304-385877016943.png",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/ee4197b1-ad0d-4089-a304-385877016943.png",
+        "price": 82.7,
+        "priceText": "₺82,70"
+      },
+      {
+        "id": "63e642b6d98e4949555fde1d",
+        "name": "Coca-Cola & Fanta & Sprite Trio",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/76cec514-00b9-4586-801a-fb5e641fb446.png",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/76cec514-00b9-4586-801a-fb5e641fb446.png",
+        "price": 89.1,
+        "priceText": "₺89,10"
+      },
+      {
+        "id": "5bceca00803e120018656ab2",
+        "name": "Lipton Ice Tea Peach",
+        "shortDescription": "4 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/2f9dcc14-8eaa-4822-93f8-4d1fa259a8fb.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/2f9dcc14-8eaa-4822-93f8-4d1fa259a8fb.jpg",
+        "price": 83.3,
+        "priceText": "₺83,30"
+      },
+      {
+        "id": "654dbda7e39f4cbc96285e97",
+        "name": "Organics by Red Bull Trio",
+        "shortDescription": "3 ct",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/b996fe96-1c0d-4319-9690-01206b068a93.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/b996fe96-1c0d-4319-9690-01206b068a93.jpg",
+        "price": 75.0999,
+        "priceText": "₺75,10"
+      },
+      {
+        "id": "62c52d7ea6cd1c6ee2292e31",
+        "name": "Nescafé Xpress Café Vanilla",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/a95dfc0e-562c-481b-902c-ee10682ff37c.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/a95dfc0e-562c-481b-902c-ee10682ff37c.jpg",
+        "price": 63.99,
+        "priceText": "₺63,99"
+      },
+      {
+        "id": "654de245b581eea007022f3c",
+        "name": "Red Bull Trio",
+        "shortDescription": "3 ct",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/91f7a390-3893-4222-b49d-db5894f04944.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/91f7a390-3893-4222-b49d-db5894f04944.jpg",
+        "price": 98.2,
+        "priceText": "₺98,20"
+      },
+      {
+        "id": "654dc9d8b8cd707c7353bdc0",
+        "name": "Red Bull Edition Trio",
+        "shortDescription": "3 ct",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/847fba42-a9ae-483f-ab79-e1eaedb68dcc.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/847fba42-a9ae-483f-ab79-e1eaedb68dcc.jpg",
+        "price": 98.1999,
+        "priceText": "₺98,20"
+      },
+      {
+        "id": "62ab1262e161b30b27dbcf21",
+        "name": "Red Bull Sugar Free Pack",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/d3b3cfdd-c93f-468a-a3cf-00280e3c7c1b.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/d3b3cfdd-c93f-468a-a3cf-00280e3c7c1b.jpg",
+        "price": 65.5,
+        "priceText": "₺65,50"
+      },
+      {
+        "id": "62ab06b15b49750a17a746b4",
+        "name": "Red Bull Mix Pack",
+        "shortDescription": "2 Products",
+        "thumbnailURL": "http://cdn.getir.com/product/62ab06b15b49750a17a746b4_tr_1655387951228.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62ab06b15b49750a17a746b4_tr_1655387951228.jpeg",
+        "price": 65.5,
+        "priceText": "₺65,50"
+      },
+      {
+        "id": "62a1a24e9c6e5e9024db3e92",
+        "name": "Red Bull Energy Drink Duo",
+        "shortDescription": "2 Products",
+        "thumbnailURL": "http://cdn.getir.com/product/62a1a24e9c6e5e9024db3e92_tr_1654779875543.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62a1a24e9c6e5e9024db3e92_tr_1654779875543.jpeg",
+        "price": 65.5,
+        "priceText": "₺65,50"
+      },
+      {
+        "id": "62a1b345814e78a9cbfef225",
+        "name": "Red Bull Energy Drink Duo",
+        "shortDescription": "2 Products",
+        "thumbnailURL": "http://cdn.getir.com/product/62a1b345814e78a9cbfef225_tr_1654775795413.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62a1b345814e78a9cbfef225_tr_1654775795413.jpeg",
+        "price": 65.5,
+        "priceText": "₺65,50"
+      },
+      {
+        "id": "64ec9dcd0a10167deb4721ba",
+        "name": "Red Bull Energy Drink The White Edition",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/aa77ae32-849f-4712-90cc-eb3791de5036.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/aa77ae32-849f-4712-90cc-eb3791de5036.jpg",
+        "price": 65.5,
+        "priceText": "₺65,50"
+      },
+      {
+        "id": "622a0aea644abd366a0d0b09",
+        "name": "Burn Energy Drink Original",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/be5c800e-30f7-4654-8597-fe1465dde449.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/be5c800e-30f7-4654-8597-fe1465dde449.jpg",
+        "price": 69.3,
+        "priceText": "₺69,30"
+      },
+      {
+        "id": "622a17311ca2ad2843510981",
+        "name": "Burn Energy Drink Gold Spark",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/b5f827c1-4c4b-4fe4-8761-4ab7115b19b9.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/b5f827c1-4c4b-4fe4-8761-4ab7115b19b9.jpg",
+        "price": 69.3,
+        "priceText": "₺69,30"
+      },
+      {
+        "id": "620cc763845f3dd1297f5cc0",
+        "name": "Black Bruin Energy Drink",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "http://cdn.getir.com/product/620cc763845f3dd1297f5cc0_tr_1645172744277.jpeg",
+        "imageURL": "http://cdn.getir.com/product/620cc763845f3dd1297f5cc0_tr_1645172744277.jpeg",
+        "price": 49.5,
+        "priceText": "₺49,50"
+      },
+      {
+        "id": "63ee3c6b1af941053b20465b",
+        "name": "Obsesso Foamy Cappuccino",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/37be4a97-1db6-463a-95fb-a2c39dfa80e9.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/37be4a97-1db6-463a-95fb-a2c39dfa80e9.jpg",
+        "price": 45.5,
+        "priceText": "₺45,50"
+      },
+      {
+        "id": "62c44353d5565ac4eaa28513",
+        "name": "Nescafé Xpress Black Roast",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/87ea01da-8353-45a1-a3da-b89edf426ca8.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/87ea01da-8353-45a1-a3da-b89edf426ca8.jpg",
+        "price": 63.99,
+        "priceText": "₺63,99"
+      },
+      {
+        "id": "62a73689b30c4707d870bbd5",
+        "name": "Obsesso Iced Coffee Latte",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "http://cdn.getir.com/product/62a73689b30c4707d870bbd5_tr_1655218809053.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62a73689b30c4707d870bbd5_tr_1655218809053.jpeg",
+        "price": 45.5,
+        "priceText": "₺45,50"
+      },
+      {
+        "id": "62a73927e2aaa46de60bde77",
+        "name": "Obsesso Iced Coffee Mocha",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "http://cdn.getir.com/product/62a73927e2aaa46de60bde77_tr_1655218437708.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62a73927e2aaa46de60bde77_tr_1655218437708.jpeg",
+        "price": 45.5,
+        "priceText": "₺45,50"
+      },
+      {
+        "id": "62cebb51b64a5f656e78d48f",
+        "name": "Obsesso Iced Caramel Macchiato",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "http://cdn.getir.com/product/62cebb51b64a5f656e78d48f_tr_1658143251298.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62cebb51b64a5f656e78d48f_tr_1658143251298.jpeg",
+        "price": 45.5,
+        "priceText": "₺45,50"
+      },
+      {
+        "id": "62c42eeae0aeb9007172dc4d",
+        "name": "Nescafé Xpress Cafe Latte with No Added Sugar",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/711163eb-257d-43b4-8e9b-ee90e1069e4d.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/711163eb-257d-43b4-8e9b-ee90e1069e4d.jpg",
+        "price": 63.99,
+        "priceText": "₺63,99"
+      },
+      {
+        "id": "62cebee9215b8b5cabd8e03a",
+        "name": "Obsesso Iced White Chocolate Mocha",
+        "shortDescription": "2 x 250 ml",
+        "thumbnailURL": "http://cdn.getir.com/product/62cebee9215b8b5cabd8e03a_tr_1658143288214.jpeg",
+        "imageURL": "http://cdn.getir.com/product/62cebee9215b8b5cabd8e03a_tr_1658143288214.jpeg",
+        "price": 45.5,
+        "priceText": "₺45,50"
+      },
+      {
+        "id": "62d7be3a0a4e9d5bc1500f15",
+        "name": "Cappy Bahçe Sour Cherry Nectar",
+        "shortDescription": "6 x 200 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/bca442e3-eb11-4779-9b87-0e54f27770e0.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/bca442e3-eb11-4779-9b87-0e54f27770e0.jpg",
+        "price": 44.99,
+        "priceText": "₺44,99"
+      },
+      {
+        "id": "62d7bb1bc0a4acbfe19af39f",
+        "name": "Cappy Bahçe Peach Nectar",
+        "shortDescription": "6 x 200 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/92a6682b-f6ce-43c6-80cb-eccaed50e2bd.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/92a6682b-f6ce-43c6-80cb-eccaed50e2bd.jpg",
+        "price": 44.9898,
+        "priceText": "₺44,99"
+      },
+      {
+        "id": "6390929133ad9b1d618397d0",
+        "name": "Pınar Lemonade",
+        "shortDescription": " 2 x 1 L",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/30289904-0ac1-4ac6-acd0-ff555a544bf2.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/30289904-0ac1-4ac6-acd0-ff555a544bf2.jpg",
+        "price": 55.8,
+        "priceText": "₺55,80"
+      },
+      {
+        "id": "63a5822fbf9ef74f4089bdec",
+        "name": "Exotic Lemonade",
+        "shortDescription": "2 x 750 ml",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/df9de356-28b1-4740-9208-b4f08bd448a9.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/df9de356-28b1-4740-9208-b4f08bd448a9.jpg",
+        "price": 131.95,
+        "priceText": "₺131,95"
+      },
+      {
+        "id": "6278e7f090615c9c56a4f3e5",
+        "name": "Exotic Lemonade & Exotic Orange and Carrot Juice Duo",
+        "shortDescription": "2 x 750 ml",
+        "thumbnailURL": "http://cdn.getir.com/product/6278e7f090615c9c56a4f3e5_tr_1652101877271.jpeg",
+        "imageURL": "http://cdn.getir.com/product/6278e7f090615c9c56a4f3e5_tr_1652101877271.jpeg",
+        "price": 136.95,
+        "priceText": "₺136,95"
+      },
+      {
+        "id": "636ccf601b16ef3a1f8d503b",
+        "name": "Doğanay Spicy Turnip Juice",
+        "shortDescription": "2 x 1 L",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/f0cd52ba-e8c9-459d-8870-44355b3e2116.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/f0cd52ba-e8c9-459d-8870-44355b3e2116.jpg",
+        "price": 44.4,
+        "priceText": "₺44,40"
+      },
+      {
+        "id": "65859f6c8d8460e87dd50225",
+        "name": "Kurukahveci Mehmet Efendi Turkish Coffee",
+        "shortDescription": "2 x 100 g",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/f979f2e6-ddde-4c3d-a192-f1a0af2056a9.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/f979f2e6-ddde-4c3d-a192-f1a0af2056a9.jpg",
+        "price": 85.5,
+        "priceText": "₺85,50"
+      },
+      {
+        "id": "64b77f7e4b3d604514412d61",
+        "name": "Nescafé Gold Light & Dark Roast Eco Package",
+        "shortDescription": "2 x 70 g",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/3d7e538b-00ef-4895-89ac-82e9dc48c71b.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/3d7e538b-00ef-4895-89ac-82e9dc48c71b.jpg",
+        "price": 201.9,
+        "priceText": "₺201,90"
+      },
+      {
+        "id": "658597998359b503810e7147",
+        "name": "Nescafé Gold Light Roast Eko Paket & Coffee Mate Ekonomik Paket",
+        "shortDescription": "2 Products",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/2f933777-7e08-45f8-95fe-ab674a83593c.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/2f933777-7e08-45f8-95fe-ab674a83593c.jpg",
+        "price": 145,
+        "priceText": "₺145,00"
+      },
+      {
+        "id": "658595d9c1254f1e1e9b9879",
+        "name": "Nescafé Gold Dark Roast Eko Paket & Coffee Mate Ekonomik Paket",
+        "shortDescription": "2 Products",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/5031f6ec-1097-432f-b458-ce9135402d5e.jpg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/5031f6ec-1097-432f-b458-ce9135402d5e.jpg",
+        "price": 145,
+        "priceText": "₺145,00"
+      },
+      {
+        "id": "6536477e80015fef04eefea6",
+        "name": "Nestlé Salep & Hot Chocolate Package",
+        "shortDescription": "4 Products",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/07e3436b-756b-4ae5-a331-2afaf876f257.jpeg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/07e3436b-756b-4ae5-a331-2afaf876f257.jpeg",
+        "price": 23.7,
+        "priceText": "₺23,70"
+      },
+      {
+        "id": "6384897fc0310020c0dc5aa8",
+        "name": "Nestlé Salep ",
+        "shortDescription": "5 x 17 g",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/224581ef-6422-4cc4-ae9f-66cc6ac64122.jpeg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/224581ef-6422-4cc4-ae9f-66cc6ac64122.jpeg",
+        "price": 29.75,
+        "priceText": "₺29,75"
+      },
+      {
+        "id": "63848a2f30c1bb5dd89ab7fa",
+        "name": "Nestlé Hot Chocolate Mix",
+        "shortDescription": "5 x 18.5 g",
+        "thumbnailURL": "https://market-product-images-cdn.getirapi.com/product/a2cfb3b5-9b1a-4d44-bfe8-20bdd3933f9c.jpeg",
+        "imageURL": "https://market-product-images-cdn.getirapi.com/product/a2cfb3b5-9b1a-4d44-bfe8-20bdd3933f9c.jpeg",
+        "price": 29.7,
+        "priceText": "₺29,70"
+      }
+    ]
+  },
+  {
+    "id": "659",
+    "email": "fatih1@gmail.com",
+    "password": "Gptmap12"
+  }
+]
+
